@@ -168,7 +168,11 @@ def apply(application: Application) -> bool:
 
 
 def send_email(to: str, subject: str, body: str = None, attachments: list[str] = None) -> bool:
-    yag = yagmail.SMTP(os.getenv("EMAIL_USER"), os.getenv("EMAIL_PASSWORD"))
+    yag = yagmail.SMTP(os.getenv("EMAIL_USER"),
+                       os.getenv("EMAIL_PASSWORD"),
+                       os.getenv("EMAIL_HOST"),
+                       os.getenv("EMAIL_PORT")
+                       )
     return yag.send(to=to,
                     subject=subject,
                     contents=body,
