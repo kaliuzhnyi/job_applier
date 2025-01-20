@@ -1,0 +1,5 @@
+.venv
+.vscode
+tests
+
+job_applier/.env
