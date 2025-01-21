@@ -1,4 +1,3 @@
-import csv
 import datetime
 import os.path
 
@@ -7,8 +6,9 @@ from docx import Document
 from openai import OpenAI
 from python_docx_replace import docx_replace
 
-from job_applier.applicant import Applicant
-from job_applier.job import Job
+from job_applier.models.applicant import Applicant
+from job_applier.log import log
+from job_applier.models.job import Job
 from job_applier.settings import SETTINGS
 from job_applier.utils.convert_docx_to_pdf import convert_to_pdf_with_libreoffice, libreoffice_available
 
@@ -123,7 +123,7 @@ def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str |
     template_file_dir = os.path.dirname(template_file_path)
     template_file_name, template_file_ext = os.path.splitext(os.path.basename(template_file_path))
 
-    result_file_suffix = f".{job.id}"
+    result_file_suffix = f".{job.source_id}"
     result_files = (
         os.path.join(template_file_dir, f"{template_file_name}{result_file_suffix}{template_file_ext}"),
         os.path.join(template_file_dir, f"{template_file_name}{result_file_suffix}.pdf")
@@ -143,57 +143,45 @@ def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str |
 
 
 def log_cover_letter(job: Job, text: str) -> None:
-    log_file = SETTINGS['log']['cover_letters']['file']
-    if not log_file:
-        return
-
-    file_exists = os.path.isfile(log_file)
     data = {
-        'job_id': job.id,
+        'job_id': job.source_id,
         'cover_letter_text': text
     }
-    with open(log_file, "a", newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data.keys())
-        if not file_exists or os.stat(log_file).st_size == 0:
-            writer.writeheader()
-        writer.writerow(data)
+    log(SETTINGS['log']['cover_letters']['file'], [data])
 
 
 def apply(application: Application) -> bool:
-    return send_email(to=application.email_to,
-                      subject=application.email_subject,
-                      body=application.email_body,
-                      attachments=[application.cover_letter.file_path, application.resume]
-                      )
+    return send_email(
+        to=application.email_to,
+        subject=application.email_subject,
+        body=application.email_body,
+        attachments=[application.cover_letter.file_path, application.resume]
+    )
 
 
 def send_email(to: str, subject: str, body: str = None, attachments: list[str] = None) -> bool:
-    yag = yagmail.SMTP(os.getenv("EMAIL_USER"),
-                       os.getenv("EMAIL_PASSWORD"),
-                       os.getenv("EMAIL_HOST"),
-                       os.getenv("EMAIL_PORT")
-                       )
-    return yag.send(to=to,
-                    subject=subject,
-                    contents=body,
-                    attachments=attachments
-                    )
+    port = os.getenv("EMAIL_PORT")
+    smtp_ssl = True if os.getenv("EMAIL_PORT") == "465" else False
+    yag = yagmail.SMTP(
+        user=os.getenv("EMAIL_USER"),
+        password=os.getenv("EMAIL_PASSWORD"),
+        host=os.getenv("EMAIL_HOST"),
+        port=port,
+        smtp_ssl=smtp_ssl
+    )
+    return yag.send(
+        to=to,
+        subject=subject,
+        contents=body,
+        attachments=attachments
+    )
 
 
 def log_application(application: Application) -> None:
-    log_file = SETTINGS['log']['applications']['file']
-    if not log_file:
-        return
-
-    file_exists = os.path.isfile(log_file)
     data = {
         'datetime': datetime.datetime.now(),
-        'job_id': application.job.id,
+        'job_id': application.job.source_id,
         'email_to': application.email_to,
         'applied': application.applied
     }
-    with open(log_file, "a", newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data.keys())
-        if not file_exists or os.stat(log_file).st_size == 0:
-            writer.writeheader()
-        writer.writerow(data)
+    log(SETTINGS['log']['applications']['file'], [data])

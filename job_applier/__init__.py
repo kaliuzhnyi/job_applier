@@ -5,18 +5,20 @@ from typing import List
 import openai
 from dotenv import load_dotenv
 
-from job_applier.applicant import Applicant
+from job_applier import databese
+from job_applier.models.applicant import Applicant
 from job_applier.application import Application, apply, log_cover_letter, create_cover_letter, create_cover_letter_file, \
     CoverLetter, log_application
 from job_applier.canada.jobbank import find_jobs
-from job_applier.job import log_jobs
-from job_applier.settings import Settings, SETTINGS
+from job_applier.models.job import log_jobs, save_jobs
+from job_applier.settings import SETTINGS
 
 
 def init() -> None:
     init_logging()
     init_envs()
     init_openai()
+    init_db()
     logging.info("App successfully initialized!")
 
 
@@ -38,6 +40,10 @@ def init_openai() -> None:
         raise ValueError("OPENAI_API_KEY not found in .env file")
 
 
+def init_db() -> None:
+    databese.init_db()
+
+
 def start() -> None:
     logging.info("App started...")
     start_job_founding()
@@ -57,6 +63,7 @@ def start_job_founding() -> None:
     # Log jobs
     logging.info(f"Log jobs, file: {SETTINGS['log']['jobs']['file']}")
     log_jobs(jobs)
+    save_jobs(jobs)
 
     # Create applications
     logging.info("Start creation cover letters for jobs...")
@@ -65,7 +72,8 @@ def start_job_founding() -> None:
     for current_job in jobs:
         current_application = Application(
             applicant=current_applicant,
-            job=current_job
+            job=current_job,
+            email_to="kalyuzhny.ivan@gmail.com"
         )
         applications.append(current_application)
         cover_letters.append(current_application.cover_letter)
@@ -83,10 +91,10 @@ def start_job_founding() -> None:
         try:
             apply(value)
             value.applied = True
-            logging.info(f"Successfully applied for job({value.job.title}, {value.job.id}, {value.job.email})")
+            logging.info(f"Successfully applied for job({value.job.title}, {value.job.source_id}, {value.job.email})")
         except Exception as e:
             value.applied = False
             logging.info(
-                f"An error occurred during the application process for job({value.job.title}, {value.job.id}, {value.job.email})")
+                f"An error occurred during the application process for job({value.job.title}, {value.job.source_id}, {value.job.email})")
             logging.error(f"Error during : {e}")
         log_application(value)

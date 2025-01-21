@@ -7,7 +7,7 @@ from time import sleep
 import requests
 from bs4 import BeautifulSoup
 
-from job_applier.job import Job, SalaryType, Workspace
+from job_applier.models.job import Job, SalaryType, Workspace
 
 
 class ApiPaths(Enum):
@@ -62,10 +62,7 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
             if link_element:
                 job.link = link_element.get("href")
 
-            id_jb_text = job_element.get("id")
-            id_jb_text = id_jb_text.replace("article-", "")
-            job.id = id_jb_text
-
+            job.source_id = job_element.get("id").replace("article-", "")
             job.source = "jobbank"
 
             job.posted_on_jb = job_element.find("span", class_="postedonJB") is not None
@@ -156,7 +153,7 @@ def fill_job_details(job: Job) -> Job:
         responce = session.post(
             link,
             data={
-                "seekeractivity:jobid": job.id,
+                "seekeractivity:jobid": job.source_id,
                 "seekeractivity_SUBMIT": "1",
                 "jakarta.faces.ViewState": "stateless",
                 "jakarta.faces.behavior.event": "action",
