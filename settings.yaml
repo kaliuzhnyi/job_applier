@@ -9,7 +9,7 @@ log:
     file: logs/applications_log.csv
 database:
   sqlite:
-    path: sqlite:///D:/Dev/Python/job_applier/tests/logs/database.db
+    path: sqlite:///logs/database.db
 resume:
   template:
     file: D:\Dev\Python\job_applier\tests\resume_template.docx
