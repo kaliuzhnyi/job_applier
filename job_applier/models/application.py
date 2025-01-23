@@ -1,5 +1,6 @@
 import logging
 import os.path
+import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional, List
@@ -174,19 +175,27 @@ def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str |
         replacements[f"applicant.{k}"] = v
 
     template_file_path = SETTINGS['cover_letter']['template']['file']
-    template_file_dir = os.path.dirname(template_file_path)
     template_file_name, template_file_ext = os.path.splitext(os.path.basename(template_file_path))
 
-    result_file_suffix = f".{job.source_id}"
+    # Define log dir for saving cover letters
+    log_file = SETTINGS['log']['cover_letters']['file']
+    if log_file:
+        log_dir = os.path.dirname(log_file)
+    else:
+        log_dir = tempfile.gettempdir()
+    log_file_name = f"{applicant.first_name.capitalize()}_{applicant.last_name.capitalize()}_{job.source_id}"
+
     result_files = (
-        os.path.join(template_file_dir, f"{template_file_name}{result_file_suffix}{template_file_ext}"),
-        os.path.join(template_file_dir, f"{template_file_name}{result_file_suffix}.pdf")
+        os.path.join(log_dir, f"{log_file_name}{template_file_ext}"),
+        os.path.join(log_dir, f"{log_file_name}.pdf")
     )
 
+    # Fill and save cover letter with template ext
     doc = Document(template_file_path)
     docx_replace(doc, **replacements)
     doc.save(result_files[0])
 
+    # Save cover letter with PDF ext
     if libreoffice_available():
         convert_to_pdf_with_libreoffice(result_files[0], result_files[1])
         cover_letter_result_file = result_files[1]

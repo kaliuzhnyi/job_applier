@@ -12,10 +12,10 @@ database:
     path: sqlite:///logs/database.db
 resume:
   template:
-    file: D:\Dev\Python\job_applier\tests\resume_template.docx
+    file: examples/resume_template.docx
 cover_letter:
   template:
-    file: D:\Dev\Python\job_applier\tests\cover_letter\CoverLetter.IvanKaliuzhnyi.docx
+    file: examples/cover_letter_template.docx
 applicant:
   first_name: Ivan
   last_name: Kaliuzhnyi
