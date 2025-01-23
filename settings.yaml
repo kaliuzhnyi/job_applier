@@ -30,6 +30,7 @@ applicant:
 job:
   title: java developer
   location: *applicant_address
+  applying: true # if false jobs are only finding and save, otherwise jobs will be applied as well
 openai:
   version: gpt-4o-mini
   create_applicant_email:

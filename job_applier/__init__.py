@@ -57,7 +57,7 @@ def start_job_founding() -> None:
 
     if jobs:
         applications = create_applications(applicant=applicant, jobs=jobs)
-        if applications:
+        if applications and SETTINGS["job"]["applying"]:
             process_applications(applications)
 
 
