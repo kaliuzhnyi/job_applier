@@ -5,9 +5,13 @@ from job_applier.models.base import Base
 from job_applier.settings import SETTINGS
 
 DATABASE_URL = SETTINGS["database"]["sqlite"]["path"]
-engine = create_engine(DATABASE_URL, echo=True)
-Session = sessionmaker(engine)
+DATABASE_USE = bool(DATABASE_URL)
+
+if DATABASE_USE:
+    engine = create_engine(DATABASE_URL, echo=True)
+    Session = sessionmaker(engine)
 
 
 def init_db():
-    Base.metadata.create_all(bind=engine)
+    if DATABASE_USE:
+        Base.metadata.create_all(bind=engine)

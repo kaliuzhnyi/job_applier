@@ -1,15 +1,15 @@
 log:
   applicants:
-    file: logs/applicants_log.csv
+    file: logs/applicants_log.csv # To disable logging in file - leave this field blank
   jobs:
-    file: logs/jobs_log.csv
+    file: logs/jobs_log.csv # To disable logging in file - leave this field blank
   cover_letters:
-    file: logs/cover_letters_log.csv
+    file: logs/cover_letters_log.csv # To disable logging in file - leave this field blank
   applications:
-    file: logs/applications_log.csv
+    file: logs/applications_log.csv # To disable logging in file - leave this field blank
 database:
   sqlite:
-    path: sqlite:///logs/database.db
+    path: sqlite:///logs/database.db # To disable logging in database - leave this field blank
 resume:
   template:
     file: examples/resume_template.docx

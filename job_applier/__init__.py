@@ -6,6 +6,7 @@ import openai
 from dotenv import load_dotenv
 
 from job_applier import databese, log, finders
+from job_applier.databese import DATABASE_USE
 from job_applier.log import logger
 from job_applier.models.applicant import Applicant, save_applicant, log_applicant
 from job_applier.models.application import Application, apply, log_cover_letter, create_cover_letter, \
@@ -71,8 +72,9 @@ def create_applicant() -> Applicant:
         log_applicant(applicant)
         logger.info(f"Applicant is logged in the file: {log_file}")
 
-    save_applicant(applicant)
-    logger.info(f"Applicant successfully saved/updated in database.")
+    if DATABASE_USE:
+        save_applicant(applicant)
+        logger.info(f"Applicant successfully saved/updated in database.")
 
     return applicant
 
@@ -95,8 +97,9 @@ def find_and_save_jobs() -> List[Job]:
             logger.info(f"Jobs are logged in the file: {log_file}")
 
         # Save/update jobs
-        save_jobs(jobs)
-        logger.info("Jobs are saved in the database.")
+        if DATABASE_USE:
+            save_jobs(jobs)
+            logger.info("Jobs are saved in the database.")
 
     return jobs
 
@@ -156,5 +159,6 @@ def process_applications(applications: List[Application]) -> None:
         log_applications(applications)
         logger.info(f"Applications are logged in the file: {log_file}")
 
-    save_applications(applications)
-    logger.info("Applications are saved in the database.")
+    if DATABASE_USE:
+        save_applications(applications)
+        logger.info("Applications are saved in the database.")

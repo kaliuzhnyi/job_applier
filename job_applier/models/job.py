@@ -44,6 +44,7 @@ class Job(Base):
     salary_type: Mapped[Optional[SalaryType]] = mapped_column(sqlalchemy.Enum(SalaryType), nullable=True)
     workspace: Mapped[Optional[Workspace]] = mapped_column(sqlalchemy.Enum(Workspace), nullable=True)
     email: Mapped[Optional[str]] = mapped_column(sqlalchemy.String, nullable=True)
+    created_at: Mapped[Optional[datetime]] = mapped_column(sqlalchemy.DateTime, nullable=True)
     updated_at: Mapped[Optional[datetime]] = mapped_column(sqlalchemy.DateTime, nullable=True)
 
 
