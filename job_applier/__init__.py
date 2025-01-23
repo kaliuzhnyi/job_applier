@@ -69,7 +69,7 @@ def create_applicant() -> Applicant:
     log_file = SETTINGS['log']['applicants']['file']
     if log_file:
         log_applicant(applicant)
-        logger.info(f"Jobs are logged in the file: {log_file}")
+        logger.info(f"Applicant is logged in the file: {log_file}")
 
     save_applicant(applicant)
     logger.info(f"Applicant successfully saved/updated in database.")
