@@ -1,12 +1,12 @@
 log:
   applicants:
-    file: D:\Dev\Python\job_applier\tests\logs\applicants_log.csv
+    file: logs/applicants_log.csv
   jobs:
-    file: D:\Dev\Python\job_applier\tests\logs\jobs_log.csv
+    file: logs/jobs_log.csv
   cover_letters:
-    file: D:\Dev\Python\job_applier\tests\logs\cover_letters_log.csv
+    file: logs/cover_letters_log.csv
   applications:
-    file: D:\Dev\Python\job_applier\tests\logs\applications_log.csv
+    file: logs/applications_log.csv
 database:
   sqlite:
     path: sqlite:///D:/Dev/Python/job_applier/tests/logs/database.db
