@@ -69,7 +69,7 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
 
             title_element = job_element.find("span", class_="noctitle")
             if title_element:
-                job.title = title_element.get_text(strip=True)
+                job.title = str(title_element.get_text(strip=True)).capitalize()
 
             date_element = job_element.find("li", class_="date")
             if date_element:
