@@ -73,7 +73,7 @@ def save_job(job: Job) -> Job:
             existing_job = session.query(Job).filter_by(source=job.source, source_id=job.source_id).first()
             if existing_job:
                 for key, value in vars(job).items():
-                    if key != "_sa_instance_state" and key != "id" and key != "updated_at":
+                    if key != "_sa_instance_state" and key != "id" and key != "updated_at" and key != "created_at":
                         setattr(existing_job, key, value)
                 session.commit()
                 session.refresh(existing_job)
@@ -81,6 +81,7 @@ def save_job(job: Job) -> Job:
                     if key != "_sa_instance_state":
                         setattr(job, key, value)
             else:
+                job.created_at = datetime.now()
                 session.add(job)
                 session.commit()
                 session.refresh(job)
