@@ -5,6 +5,7 @@ from enum import Enum
 from typing import List, Optional
 
 import sqlalchemy
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Mapped, mapped_column
 
 from job_applier.databese import Session
@@ -43,6 +44,7 @@ class Job(Base):
     salary_type: Mapped[Optional[SalaryType]] = mapped_column(sqlalchemy.Enum(SalaryType), nullable=True)
     workspace: Mapped[Optional[Workspace]] = mapped_column(sqlalchemy.Enum(Workspace), nullable=True)
     email: Mapped[Optional[str]] = mapped_column(sqlalchemy.String, nullable=True)
+    updated_at: Mapped[Optional[datetime]] = mapped_column(sqlalchemy.DateTime, nullable=True)
 
 
 def find_jobs() -> List[Job]:
@@ -59,10 +61,31 @@ def log_jobs(jobs: List[Job]) -> None:
 
 
 def save_jobs(jobs: List[Job]) -> None:
+    for job in jobs:
+        save_job(job)
+
+
+def save_job(job: Job) -> Job:
+    job.updated_at = datetime.now()
     with Session() as session:
         try:
-            session.add_all(jobs)
-            session.commit()
-        except Exception as e:
+            existing_job = session.query(Job).filter_by(source=job.source, source_id=job.source_id).first()
+            if existing_job:
+                for key, value in vars(job).items():
+                    if key != "_sa_instance_state" and key != "id" and key != "updated_at":
+                        setattr(existing_job, key, value)
+                session.commit()
+                session.refresh(existing_job)
+                for key, value in vars(existing_job).items():
+                    if key != "_sa_instance_state":
+                        setattr(job, key, value)
+            else:
+                session.add(job)
+                session.commit()
+                session.refresh(job)
+            return job
+        except SQLAlchemyError as e:
             session.rollback()
-            logging.error(f"Can't save jobs: {e}")
+            logging.error(f"Database error while saving or updating job: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error while saving or updating job: {e}")

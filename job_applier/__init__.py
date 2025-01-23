@@ -5,12 +5,13 @@ from typing import List
 import openai
 from dotenv import load_dotenv
 
-from job_applier import databese
-from job_applier.models.applicant import Applicant
-from job_applier.application import Application, apply, log_cover_letter, create_cover_letter, create_cover_letter_file, \
-    CoverLetter, log_application
-from job_applier.canada.jobbank import find_jobs
-from job_applier.models.job import log_jobs, save_jobs
+from job_applier import databese, log, canada
+from job_applier.log import logger
+from job_applier.models.applicant import Applicant, save_applicant, log_applicant
+from job_applier.models.application import Application, apply, log_cover_letter, create_cover_letter, \
+    create_cover_letter_file, \
+    CoverLetter, log_application, save_application, check_application, save_applications, log_applications
+from job_applier.models.job import find_jobs, log_jobs, save_jobs, Job, JOB_FINDERS
 from job_applier.settings import SETTINGS
 
 
@@ -23,7 +24,7 @@ def init() -> None:
 
 
 def init_logging() -> None:
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    log.init_logging()
 
 
 def init_envs() -> None:
@@ -50,28 +51,72 @@ def start() -> None:
 
 
 def start_job_founding() -> None:
-    current_applicant = Applicant()
-    if current_applicant:
-        logging.info(f"Applicant successfully initialized. Data - {current_applicant}")
+    applicant = create_applicant()
+    jobs = find_and_save_jobs()
+
+    if jobs:
+        applications = create_applications(applicant=applicant, jobs=jobs)
+        if applications:
+            process_applications(applications)
+
+
+def create_applicant() -> Applicant:
+    logger.info(f"Applicant initializing...")
+
+    applicant = Applicant()
+    logger.info(f"Applicant successfully initialized: {applicant}")
+
+    log_file = SETTINGS['log']['applicants']['file']
+    if log_file:
+        log_applicant(applicant)
+        logger.info(f"Jobs are logged in the file: {log_file}")
+
+    save_applicant(applicant)
+    logger.info(f"Applicant successfully saved/updated in database.")
+
+    return applicant
+
+
+def find_and_save_jobs() -> List[Job]:
+    logger.info(f"Start finding jobs, title: {SETTINGS['job']['title']}, location: {SETTINGS['job']['location']}")
+
+    JOB_FINDERS.append(canada.jobbank.find_jobs)
 
     # Find jobs
-    logging.info(
-        f"Start searching for jobs, title: {SETTINGS['job']['title']}, location: {SETTINGS['job']['location']}")
-    jobs = find_jobs(SETTINGS['job']['title'], SETTINGS['job']['location'])
-    logging.info("Found %s jobs", len(jobs))
+    jobs = find_jobs()
+    logger.info(f"Jobs found: {len(jobs)}")
 
-    # Log jobs
-    logging.info(f"Log jobs, file: {SETTINGS['log']['jobs']['file']}")
-    log_jobs(jobs)
-    save_jobs(jobs)
+    if jobs:
+
+        # Log jobs
+        log_file = SETTINGS['log']['jobs']['file']
+        if log_file:
+            log_jobs(jobs)
+            logger.info(f"Jobs are logged in the file: {log_file}")
+
+        # Save/update jobs
+        save_jobs(jobs)
+        logger.info("Jobs are saved in the database.")
+
+    return jobs
+
+
+def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Application]:
+    logger.info("Start creation cover letters for jobs...")
 
     # Create applications
-    logging.info("Start creation cover letters for jobs...")
     cover_letters: List[CoverLetter] = []
     applications: List[Application] = []
     for current_job in jobs:
+
+        existing_application = check_application(job=current_job, applicant=applicant)
+        if existing_application:
+            logger.info(
+                f"Applicant {applicant} already applied to job {current_job} at {existing_application.applied_at}")
+            continue
+
         current_application = Application(
-            applicant=current_applicant,
+            applicant=applicant,
             job=current_job,
             email_to="kalyuzhny.ivan@gmail.com"
         )
@@ -79,22 +124,37 @@ def start_job_founding() -> None:
         cover_letters.append(current_application.cover_letter)
 
     # Log applications(cover letters)
-    logging.info(f"Log cover letters, file: {SETTINGS['log']['cover_letters']['file']}")
-    for value in cover_letters:
-        log_cover_letter(job=value.job, text=value.text)
+    log_file = SETTINGS['log']['cover_letters']['file']
+    if cover_letters and log_file:
+        for cover_letter in cover_letters:
+            log_cover_letter(job=cover_letter.job, text=cover_letter.text)
+        logger.info(f"Cover letters are logged in the file: {log_file}")
+
+    return applications
+
+
+def process_applications(applications: List[Application]) -> None:
+    logger.info("Start applying for jobs...")
 
     # Apply for jobs
-    logging.info("Start applying for jobs...")
-    for value in applications:
-        if not value.email_to:
+    for application in applications:
+        if not application.email_to:
             continue
         try:
-            apply(value)
-            value.applied = True
-            logging.info(f"Successfully applied for job({value.job.title}, {value.job.source_id}, {value.job.email})")
+            apply(application)
+            application.applied = True
+            logger.info(
+                f"Successfully applied for job({application.job.title}, {application.job.source_id}, {application.job.email})")
         except Exception as e:
-            value.applied = False
-            logging.info(
-                f"An error occurred during the application process for job({value.job.title}, {value.job.source_id}, {value.job.email})")
-            logging.error(f"Error during : {e}")
-        log_application(value)
+            application.applied = False
+            logger.info(
+                f"An error occurred during the application process for job({application.job.title}, {application.job.source_id}, {application.job.email})")
+            logger.error(f"Error during : {e}")
+
+    log_file = SETTINGS['log']['applications']['file']
+    if log_file:
+        log_applications(applications)
+        logger.info(f"Applications are logged in the file: {log_file}")
+
+    save_applications(applications)
+    logger.info("Applications are saved in the database.")

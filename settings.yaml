@@ -1,4 +1,6 @@
 log:
+  applicants:
+    file: D:\Dev\Python\job_applier\tests\logs\applicants_log.csv
   jobs:
     file: D:\Dev\Python\job_applier\tests\logs\jobs_log.csv
   cover_letters:
@@ -26,7 +28,7 @@ applicant:
   cover_letter:
     file:
 job:
-  title: Bookkeeper
+  title: java developer
   location: *applicant_address
 openai:
   version: gpt-4o-mini
