@@ -24,7 +24,7 @@ applicant:
     phone: +1 (437) 441-6585
     address: &applicant_address Barrie, ON
   resume:
-    file: D:\Dev\Python\job_applier\tests\Resume.IvanKaliuzhnyi.pdf
+    file: tests/Resume.IvanKaliuzhnyi.pdf
   cover_letter:
     file:
 job:
