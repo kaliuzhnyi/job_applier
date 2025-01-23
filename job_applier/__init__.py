@@ -82,7 +82,7 @@ def create_applicant() -> Applicant:
 def find_and_save_jobs() -> List[Job]:
     logger.info(f"Start finding jobs, title: {SETTINGS['job']['title']}, location: {SETTINGS['job']['location']}")
 
-    JOB_FINDERS.append(finders.canada.jobbank.find_jobs)
+    JOB_FINDERS.append(finders.canada.jobbank.functions.find_jobs)
 
     # Find jobs
     jobs = find_jobs()
