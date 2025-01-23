@@ -1,5 +1,6 @@
 .venv
 .vscode
 tests
+logs
 
 job_applier/.env
