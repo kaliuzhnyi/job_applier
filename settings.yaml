@@ -28,7 +28,7 @@ applicant:
   cover_letter:
     file:
 job:
-  title: java developer
+  title: bookkeeper
   location: *applicant_address
   applying: false # if false jobs are only finding and save, otherwise jobs will be applied as well
 openai:

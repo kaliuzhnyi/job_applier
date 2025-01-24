@@ -1,5 +1,6 @@
 import random
 import re
+import urllib.parse
 from datetime import datetime
 from enum import Enum
 from time import sleep
@@ -60,7 +61,9 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
 
             link_element = job_element.find("a", class_="resultJobItem")
             if link_element:
-                job.link = link_element.get("href")
+                href = link_element.get("href")
+                url_parts = urllib.parse.urlparse(href)
+                job.link = urllib.parse.urljoin(ApiPaths.DOMAIN.value, url_parts.path)
 
             job.source_id = job_element.get("id").replace("article-", "")
             job.source = "jobbank"
@@ -132,7 +135,8 @@ def fill_job_details(job: Job) -> Job:
 
     with requests.Session() as session:
 
-        link = f"{ApiPaths.DOMAIN.value}{job.link}"
+        # link = f"{ApiPaths.DOMAIN.value}{job.link}"
+        link = job.link
 
         # Get page with job description
         response = session.get(link)

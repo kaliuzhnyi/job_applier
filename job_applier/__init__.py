@@ -5,6 +5,7 @@ from typing import List
 import openai
 from dotenv import load_dotenv
 
+import job_applier
 from job_applier import databese, log, finders
 from job_applier.databese import DATABASE_USE
 from job_applier.log import logger
@@ -82,7 +83,7 @@ def create_applicant() -> Applicant:
 def find_and_save_jobs() -> List[Job]:
     logger.info(f"Start finding jobs, title: {SETTINGS['job']['title']}, location: {SETTINGS['job']['location']}")
 
-    JOB_FINDERS.append(finders.canada.jobbank.functions.find_jobs)
+    JOB_FINDERS.append(job_applier.finders.jobbank.functions.find_jobs)
 
     # Find jobs
     jobs = find_jobs()
@@ -130,7 +131,7 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
     log_file = SETTINGS['log']['cover_letters']['file']
     if cover_letters and log_file:
         for cover_letter in cover_letters:
-            log_cover_letter(job=cover_letter.job, text=cover_letter.text)
+            log_cover_letter(cover_letter=cover_letter)
         logger.info(f"Cover letters are logged in the file: {log_file}")
 
     return applications

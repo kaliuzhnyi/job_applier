@@ -205,10 +205,13 @@ def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str |
     return cover_letter_result_file
 
 
-def log_cover_letter(job: Job, text: str) -> None:
+def log_cover_letter(cover_letter: CoverLetter) -> None:
     data = {
-        'job_id': job.source_id,
-        'cover_letter_text': text
+        'job_applicant': f"{cover_letter.applicant.first_name} {cover_letter.applicant.last_name}",
+        'job_applicant_email': cover_letter.applicant.email,
+        'job_source': cover_letter.job.source,
+        'job_source_id': cover_letter.job.source_id,
+        'cover_letter_text': cover_letter.text
     }
     log(SETTINGS['log']['cover_letters']['file'], [data])
 
@@ -247,7 +250,10 @@ def log_applications(applications: List[Application]) -> None:
 
 def log_application(application: Application) -> None:
     data = {
-        'job_id': application.job.source_id,
+        'job_applicant': f"{application.applicant.first_name} {application.applicant.last_name}",
+        'job_applicant_email': application.applicant.email,
+        'job_source': application.job.source,
+        'job_source_id': application.job.source_id,
         'email_to': application.email_to,
         'applied': application.applied,
         'applied_at': application.applied_at
