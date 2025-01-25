@@ -6,7 +6,7 @@ import openai
 from dotenv import load_dotenv
 
 import job_applier
-from job_applier import databese, log, finders
+from job_applier import databese, log, scrapers
 from job_applier.databese import DATABASE_USE
 from job_applier.log import logger
 from job_applier.models.applicant import Applicant, save_applicant, log_applicant
@@ -121,8 +121,7 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
 
         current_application = Application(
             applicant=applicant,
-            job=current_job,
-            email_to="kalyuzhny.ivan@gmail.com"
+            job=current_job
         )
         applications.append(current_application)
         cover_letters.append(current_application.cover_letter)

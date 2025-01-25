@@ -183,7 +183,7 @@ def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str |
         log_dir = os.path.dirname(log_file)
     else:
         log_dir = tempfile.gettempdir()
-    log_file_name = f"{applicant.first_name.capitalize()}_{applicant.last_name.capitalize()}_{job.source_id}"
+    log_file_name = f"{applicant.first_name.capitalize()}_{applicant.last_name.capitalize()}_Cover_Letter_{job.source_id}"
 
     result_files = (
         os.path.join(log_dir, f"{log_file_name}{template_file_ext}"),

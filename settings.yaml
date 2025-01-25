@@ -24,13 +24,13 @@ applicant:
     phone: +1 (437) 441-6585
     address: &applicant_address Barrie, ON
   resume:
-    file: tests/Resume.IvanKaliuzhnyi.pdf
+    file: tests/Ivan_Kaliuzhnyi_Resume.pdf
   cover_letter:
     file:
 job:
   title: bookkeeper
-  location: *applicant_address
-  applying: false # if false jobs are only finding and save, otherwise jobs will be applied as well
+  location: Toronto, ON # if looking for jobs in city where applicant live use anchor - *applicant_address
+  applying: true # if false jobs are only finding and save, otherwise jobs will be applied as well
 openai:
   version: gpt-4o-mini
   create_applicant_email:
