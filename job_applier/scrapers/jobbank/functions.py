@@ -2,8 +2,8 @@ import random
 import re
 import urllib.parse
 from datetime import datetime
-from enum import Enum
 from time import sleep
+from typing import NamedTuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -11,10 +11,17 @@ from bs4 import BeautifulSoup
 from job_applier.models.job import Job, SalaryType, Workspace
 
 
-class ApiPaths(Enum):
-    DOMAIN = "https://www.jobbank.gc.ca"
-    JOBSEARCH = "/jobsearch/jobsearch"
-    JOBSEARCH_MORE = "/jobsearch/job_search_loader.xhtml"
+class ApiPaths(NamedTuple):
+    DOMAIN: str
+    JOBSEARCH: str
+    JOBSEARCH_MORE: str
+
+
+API_PATHS = ApiPaths(
+    DOMAIN="https://www.jobbank.gc.ca",
+    JOBSEARCH="/jobsearch/jobsearch",
+    JOBSEARCH_MORE="/jobsearch/job_search_loader.xhtml"
+)
 
 
 def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
@@ -32,7 +39,7 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
 
         # Load main result
         response = session.get(
-            f"{ApiPaths.DOMAIN.value}{ApiPaths.JOBSEARCH.value}",
+            f"{API_PATHS.DOMAIN}{API_PATHS.JOBSEARCH}",
             params={"searchstring": job_title, "locationstring": location, "sort": sort},
         )
 
@@ -45,7 +52,7 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
 
         # Load more results
         while True:
-            response = session.get(f"{ApiPaths.DOMAIN.value}{ApiPaths.JOBSEARCH_MORE.value}")
+            response = session.get(f"{API_PATHS.DOMAIN}{API_PATHS.JOBSEARCH_MORE}")
             soup = BeautifulSoup(response.content, "html.parser")
             extra_articles = soup.find_all("article")
             if not extra_articles:
@@ -63,7 +70,7 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
             if link_element:
                 href = link_element.get("href")
                 url_parts = urllib.parse.urlparse(href)
-                job.link = urllib.parse.urljoin(ApiPaths.DOMAIN.value, url_parts.path)
+                job.link = urllib.parse.urljoin(API_PATHS.DOMAIN, url_parts.path)
 
             job.source_id = job_element.get("id").replace("article-", "")
             job.source = "jobbank"
@@ -135,7 +142,6 @@ def fill_job_details(job: Job) -> Job:
 
     with requests.Session() as session:
 
-        # link = f"{ApiPaths.DOMAIN.value}{job.link}"
         link = job.link
 
         # Get page with job description

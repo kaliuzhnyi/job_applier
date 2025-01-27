@@ -5,7 +5,6 @@ from typing import List
 import openai
 from dotenv import load_dotenv
 
-import job_applier
 from job_applier import databese, log, scrapers
 from job_applier.databese import DATABASE_USE
 from job_applier.log import logger
@@ -14,6 +13,7 @@ from job_applier.models.application import Application, apply, log_cover_letter,
     create_cover_letter_file, \
     CoverLetter, log_application, save_application, check_application, save_applications, log_applications
 from job_applier.models.job import find_jobs, log_jobs, save_jobs, Job, JOB_FINDERS
+from job_applier.scrapers import jobbank
 from job_applier.settings import SETTINGS
 
 
@@ -83,7 +83,7 @@ def create_applicant() -> Applicant:
 def find_and_save_jobs() -> List[Job]:
     logger.info(f"Start finding jobs, title: {SETTINGS['job']['title']}, location: {SETTINGS['job']['location']}")
 
-    JOB_FINDERS.append(job_applier.finders.jobbank.functions.find_jobs)
+    JOB_FINDERS.append(jobbank.find_jobs)
 
     # Find jobs
     jobs = find_jobs()

@@ -1,0 +1,3 @@
+
+def apply() -> None:
+    pass
