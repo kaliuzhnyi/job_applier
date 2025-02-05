@@ -1,14 +1,17 @@
+# Logging configuration
+# Use this section to define files for logging different operations.
+# To disable logging for a particular section, leave the corresponding 'file' field empty.
 log:
   applicants:
-    file: logs/applicants_log.csv # To disable logging in file - leave this field blank
+    file: logs/applicants_log.csv # Leave this field blank to disable applicant logs.
   jobs:
-    file: logs/jobs_log.csv # To disable logging in file - leave this field blank
+    file: logs/jobs_log.csv # Leave this blank if you do not need job logging.
   resumes:
-    file: logs/resumes_log.csv # To disable logging in file - leave this field blank
+    file: logs/resumes_log.csv # Disable resume logging by leaving this field blank.
   cover_letters:
-    file: logs/cover_letters_log.csv # To disable logging in file - leave this field blank
+    file: logs/cover_letters_log.csv # Leave this field blank to deactivate logging.
   applications:
-    file: logs/applications_log.csv # To disable logging in file - leave this field blank
+    file: logs/applications_log.csv # Leave it empty to disable logging for applications.
 database:
   sqlite:
     path: sqlite:///logs/database.db # To disable logging in database - leave this field blank
