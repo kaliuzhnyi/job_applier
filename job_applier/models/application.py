@@ -1,12 +1,9 @@
 import logging
-import os.path
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Optional, List
+from typing import Optional, List
 
 import sqlalchemy
-import yagmail
-from openai import OpenAI
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -15,6 +12,7 @@ from job_applier.log import log
 from job_applier.models.applicant import Applicant
 from job_applier.models.base import Base
 from job_applier.models.cover_letter import CoverLetterModel
+from job_applier.models.email import EmailModel
 from job_applier.models.job import Job
 from job_applier.models.resume import ResumeModel
 from job_applier.settings import SETTINGS
@@ -24,44 +22,38 @@ from job_applier.settings import SETTINGS
 class Application(Base):
     __tablename__ = "applications"
 
+    job: Mapped[Job] = relationship()
+    applicant: Mapped[Applicant] = relationship()
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     job_id: Mapped[int] = mapped_column(sqlalchemy.ForeignKey("jobs.id"), nullable=False)
     applicant_id: Mapped[int] = mapped_column(sqlalchemy.ForeignKey("applicants.id"), nullable=False)
     _applied: Mapped[bool] = mapped_column("applied", sqlalchemy.Boolean, default=False)
     applied_at: Mapped[Optional[datetime]] = mapped_column(sqlalchemy.DateTime)
 
-    job: Mapped[Job] = relationship()
-    applicant: Mapped[Applicant] = relationship()
+    email: Optional[EmailModel] = None
+    resume: Optional[ResumeModel] = None
+    cover_letter: Optional[CoverLetterModel] = None
 
-    email_to: Optional[str] = field(default=None, init=False)
-    email_subject: Optional[str] = field(default=None, init=False)
-    email_body: Optional[str] = field(default=None, init=False)
-    resume: Optional[ResumeModel] = field(default=None, init=False)
-    cover_letter: Optional[CoverLetterModel] = field(default=None, init=False)
+    def __post_init__(self) -> None:
 
-    def __init__(
-            self,
-            applicant: Applicant,
-            job: Job,
-            email_to: Optional[str] = None,
-            email_subject: Optional[str] = None,
-            email_body: Optional[str] = None,
-            resume: Optional[ResumeModel] = None,
-            cover_letter: Optional[CoverLetterModel] = None,
-            applied: bool = False,
-            applied_at: datetime = None,
-            **kw: Any
-    ):
-        super().__init__(**kw)
-        self.applicant = applicant
-        self.job = job
-        self.email_to = email_to or job.email
-        self.email_subject = email_subject or create_email_subject(job)
-        self.email_body = email_body or create_email_body(job, applicant)
-        self.cover_letter = cover_letter or CoverLetterModel(job=job, applicant=applicant)
-        self.resume = resume or ResumeModel(job=job, applicant=applicant)
-        self.applied = applied
-        self.applied_at = applied_at or (datetime.now() if applied else None)
+        if not self.cover_letter:
+            self.cover_letter = CoverLetterModel(job=self.job, applicant=self.applicant)
+            if self.email and self.cover_letter.file_path not in self.email.attachments:
+                self.email.attachments.append(self.cover_letter.file_path)
+
+        if not self.resume:
+            self.resume = ResumeModel(job=self.job, applicant=self.applicant)
+            if self.email and self.resume.file_path not in self.email.attachments:
+                self.email.attachments.append(self.resume.file_path)
+
+        if not self.email:
+            self.email = EmailModel(self.job, self.applicant)
+            self.email.attachments.append(self.cover_letter.file_path)
+            self.email.attachments.append(self.resume.file_path)
+
+        if not self.applied_at and self.applied:
+            self.applied_at = datetime.now()
 
     @property
     def applied(self) -> bool:
@@ -72,62 +64,9 @@ class Application(Base):
         self._applied = value
         self.applied_at = datetime.now() if self._applied else None
 
-
-def create_email_subject(job: Job) -> str:
-    if not job or not job.title:
-        return "Application for position"
-    return f"Application for {job.title.capitalize()} position"
-
-
-def create_email_body(job: Job, applicant: Applicant) -> str | None:
-    developer_content = SETTINGS["openai"]["create_applicant_email"]["developer_content"]
-    developer_content = developer_content.format(job=job, applicant=applicant)
-    user_content = SETTINGS["openai"]["create_applicant_email"]["user_content"]
-    user_content = user_content.format(job=job, applicant=applicant)
-
-    client = OpenAI()
-    chat = client.chat.completions.create(
-        model=SETTINGS["openai"]["version"],
-        messages=[
-            {"role": "developer", "content": developer_content},
-            {"role": "user", "content": user_content},
-        ],
-        response_format={
-            "type": "text"
-        },
-    )
-
-    if not len(chat.choices):
-        return None
-
-    return chat.choices[0].message.content
-
-
-def apply(application: Application) -> bool:
-    return send_email(
-        to=application.email_to,
-        subject=application.email_subject,
-        body=application.email_body,
-        attachments=[application.cover_letter.file_path, application.resume.file_path]
-    )
-
-
-def send_email(to: str, subject: str, body: str = None, attachments: list[str] = None) -> bool:
-    port = os.getenv("EMAIL_PORT")
-    smtp_ssl = True if os.getenv("EMAIL_PORT") == "465" else False
-    yag = yagmail.SMTP(
-        user=os.getenv("EMAIL_USER"),
-        password=os.getenv("EMAIL_PASSWORD"),
-        host=os.getenv("EMAIL_HOST"),
-        port=port,
-        smtp_ssl=smtp_ssl
-    )
-    return yag.send(
-        to=to,
-        subject=subject,
-        contents=body,
-        attachments=attachments
-    )
+    def apply(self) -> bool:
+        self.applied = self.email.send()
+        return self.applied
 
 
 def log_applications(applications: List[Application]) -> None:
@@ -141,7 +80,7 @@ def log_application(application: Application) -> None:
         'job_applicant_email': application.applicant.email,
         'job_source': application.job.source,
         'job_source_id': application.job.source_id,
-        'email_to': application.email_to,
+        'email_to': application.email.to,
         'applied': application.applied,
         'applied_at': application.applied_at
     }

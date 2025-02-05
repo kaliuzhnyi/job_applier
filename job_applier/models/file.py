@@ -9,8 +9,8 @@ from job_applier import Applicant, Job
 class FileModel(ABC):
     applicant: Applicant
     job: Job
-    text: Optional[str] = field(default=None, init=False)
-    file_path: Optional[str] = field(default=None, init=False)
+    text: Optional[str] = None
+    file_path: Optional[str] = None
 
     def __post_init__(self) -> None:
         if not self.text:
@@ -25,3 +25,4 @@ class FileModel(ABC):
     @abstractmethod
     def create_file(self) -> Optional[str]:
         pass
+
