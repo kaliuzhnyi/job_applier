@@ -48,7 +48,7 @@ class Application(Base):
                 self.email.attachments.append(self.resume.file_path)
 
         if not self.email:
-            self.email = EmailModel(self.job, self.applicant)
+            self.email = EmailModel(job=self.job, applicant=self.applicant)
             self.email.attachments.append(self.cover_letter.file_path)
             self.email.attachments.append(self.resume.file_path)
 
