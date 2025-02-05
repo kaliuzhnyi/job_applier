@@ -66,7 +66,7 @@ def save_jobs(jobs: List[Job]) -> None:
         save_job(job)
 
 
-def save_job(job: Job) -> Job:
+def save_job(job: Job) -> Optional[Job]:
     job.updated_at = datetime.now()
     with Session() as session:
         try:
@@ -91,3 +91,14 @@ def save_job(job: Job) -> Job:
             logging.error(f"Database error while saving or updating job: {e}")
         except Exception as e:
             logging.error(f"Unexpected error while saving or updating job: {e}")
+
+
+def get_job(source: str, source_id: str) -> Optional[Job]:
+    with Session() as session:
+        try:
+            return session.query(Job).filter_by(source=source, source_id=source_id).first()
+        except SQLAlchemyError as e:
+            session.rollback()
+            logging.error(f"Database error while getting job: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error while getting job: {e}")

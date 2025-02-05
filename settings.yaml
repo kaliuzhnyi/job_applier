@@ -3,6 +3,8 @@ log:
     file: logs/applicants_log.csv # To disable logging in file - leave this field blank
   jobs:
     file: logs/jobs_log.csv # To disable logging in file - leave this field blank
+  resumes:
+    file: logs/resumes_log.csv # To disable logging in file - leave this field blank
   cover_letters:
     file: logs/cover_letters_log.csv # To disable logging in file - leave this field blank
   applications:
@@ -24,12 +26,126 @@ applicant:
     phone: +1 (437) 441-6585
     address: &applicant_address Barrie, ON
   resume:
-    file: tests/Ivan_Kaliuzhnyi_Resume.pdf
+    file: # If field is empty, AI will generate text and file
   cover_letter:
-    file:
+    file: # If field is empty, AI will generate text and file
+  summary:
+  skills:
+    - •  Execution of full accounting cycle, including AP/AR, payroll, and tax remittances.
+    - •  Preparation and analysis of financial statements (assets, liabilities, equity, income statements).
+    - •  Strong knowledge of Canadian accounting principles and practices.
+    - •  Proficient in QuickBooks, enterprise accounting software, and financial data integration.
+    - •  Skilled in reconciliation processes for accounts and bank statements.
+    - •  Advanced Excel skills, including pivot tables, VLOOKUP, and macros.
+    - •  Excellent attention to detail and organizational skills.
+    - •  Critical thinking and problem-solving abilities.
+    - •  Strong communication skills, both written and verbal.
+  education:
+    # Education 1
+    - title: •  Bookkeeping
+      organization: Lilico Accounting Corporation
+      date:
+        start: 2025
+        end: 2025
+      description:
+    # Education 2
+    - title: •  Intuit Academy Bookkeeping
+      organization: INTUIT
+      date:
+        start: 2024
+        end: 2024
+      description: |
+        Completed the Intuit Academy Bookkeeping program, gaining a strong foundation in bookkeeping principles, financial statements, and accounting measurement.
+        Developed skills in the double-entry bookkeeping system, bank reconciliations, and financial statement analysis.
+        Acquired hands-on experience with QuickBooks Online and real-world accounting scenarios.
+    # Education 3
+    - title: •  Master's degree, International EconomicsMaster's degree, International Economics
+      organization: Donetsk National University
+      date:
+        start: 2012
+        end: 2014
+      description: |
+        Focused on global markets, economic policy, and financial analysis.
+        Developed strong analytical and strategic decision-making skills for international business and economic development.
+    # Education 4
+    - title: •  Bachelor's degree, International EconomicsBachelor's degree, International Economics
+      organization: Donetsk National University
+      date:
+        start: 2008
+        end: 2012
+      description: |
+        Developed a solid understanding of economic analysis, international trade, and financial management.
+        Gained analytical and problem-solving skills essential for navigating global economic trends and business strategies.
+  experience:
+    # Experience/job 1
+    - title: •  Senior Software Engineer
+      company: Zakaz.ua
+      date:
+        start: Dec 2021
+        end: Present
+      description: |
+        ．Designed and implemented custom business applications to streamline operations, addressing both standard and unique requirements within the company.
+        ．Developed integrations with enterprise tools such as Active Directory and Google BigQuery, enabling centralized user management and advanced data analytics.
+        ．Implemented secure digital signature functionality using EUSign, ensuring compliance with Ukrainian regulatory standards and enhancing the security of document processing.
+        ．Led the migration of the development process to modern tools, including Git for version control and 1C:EDT for an efficient development environment, improving team collaboration and productivity.
+        ．Automated workflows and data exchange processes, reducing manual effort and improving the accuracy and speed of business operations.
+    # Experience/job 2
+    - title: •  Senior Software Engineer
+      company: Lombard Pershyy
+      date:
+        start: Jan 2020
+        end: Nov 2021
+      description: |
+        ．Designed and implemented custom business applications tailored to meet specific operational needs, improving the efficiency of core business processes.
+        ．Enhanced and optimized existing software configurations to align with the company’s evolving requirements and industry standards.
+        ．Developed and automated workflows to streamline operational tasks, reduce manual effort, and improve accuracy in data management.
+        ．Collaborated with stakeholders to gather requirements and deliver solutions that addressed real-world challenges and supported business growth.
+        ．Designed and implemented RESTful integrations to connect various company systems, enhancing data exchange and process automation across the organization.
+        ．Developed custom business applications to meet both standard and unique business requirements, streamlining operations and ensuring compliance with local regulations.
+        ．Engineered integrations with government platforms, including Diia, Open Data, and Ukrposhta, facilitating seamless communication and data sharing.
+        ．Collaborated with financial service providers like Platon, CITYHUB, and Global Money, ensuring secure and efficient payment processing and transaction management.
+        ．Integrated with communication tools and third-party services, including Asterisk PBX, Telegram, Google Translate, and Hotline Finance, enabling enhanced operational capabilities.
+        ．Developed integrations with industry-specific platforms such as RIA.com (Auto) and credit reporting services like UBKI, improving data accessibility and operational workflows.
+        ．Implemented secure digital signature integrations with EUSign and BilboSign, ensuring document authenticity and regulatory compliance.
+        ．Facilitated data exchange between enterprise systems using HTTP, COM, and OData, ensuring interoperability and real-time synchronization.
+    # Experience/job 3
+    - title: •  Senior Software Engineer
+      company: Sobi Group
+      date:
+        start: Aug 2019
+        end: Jan 2020
+      description: |
+        ．Designed and implemented custom business applications tailored to meet specific operational needs, improving the efficiency of core business processes.
+        ．Enhanced and optimized existing software configurations to align with the company’s evolving requirements and industry standards.
+        ．Developed and automated workflows to streamline operational tasks, reduce manual effort, and improve accuracy in data management.
+        ．Collaborated with stakeholders to gather requirements and deliver solutions that addressed real-world challenges and supported business growth.
+    # Experience/job 4
+    - title: •  Senior Software Engineer
+      company: MegaTrade TG
+      date:
+        start: Jun 2018
+        end: Jan 2020
+      description: |
+        ．Developed a robust backend application for inventory management, facilitating seamless data exchange between the company’s website and ERP system.
+        ．Built and enhanced custom business applications to automate and streamline core operations, including inventory tracking, reporting, and order management.
+        ．Designed and implemented integrations with third-party services, including systems based on OpenCart, to improve e-commerce capabilities and synchronize inventory and order data across platforms.
+        ．Developed integrations with retail equipment and banking services to enable efficient payment processing, invoicing, and point-of-sale operations.
+        ．Improved and customized reporting tools to provide actionable insights for business decision-making, enhancing operational transparency and efficiency.
+    # Experience/job 5
+    - title: •  Junior Software Engineer & Middle Software Engineer
+      company: OroPharm
+      date:
+        start: Jan 2014
+        end: May 2018
+      description: |
+        ．Designed and implemented a custom enterprise resource planning (ERP) system tailored to the company’s unique requirements, optimizing inventory management, sales tracking, and reporting processes.
+        ．Developed and maintained integrations between the ERP system and third-party web services, including banking systems and retail equipment, ensuring seamless operations and improving efficiency in payment processing and inventory updates.
+        ．Automated core business processes such as inventory tracking and financial reconciliation, reducing manual workload and minimizing errors.
+        ．Administered IT infrastructure, including server deployment, remote access solutions, and network management, ensuring high availability and security of business-critical systems.
+        ．Established and maintained infrastructure for retail equipment, including point-of-sale systems, ensuring operational efficiency and improving customer service at multiple locations.
 job:
   title: bookkeeper
-  location: Toronto, ON # if looking for jobs in city where applicant live use anchor - *applicant_address
+  location: Barrie, ON # if looking for jobs in city where applicant live use anchor - *applicant_address
   applying: true # if false jobs are only finding and save, otherwise jobs will be applied as well
 openai:
   version: gpt-4o-mini
@@ -65,3 +181,44 @@ openai:
       Instead additional inputs, use appropriate wording to make the email universally applicable and professional.
       DO NOT INCLUDE ANY PLACEHOLDERS OR GENERIC TERM!!!
     user_content: *user_content
+  create_applicant_resume:
+    developer_content: |
+      You are an AI assistant that helps tailor resumes to match specific job postings.
+      INPUT DATA:
+      You will receive a JSON with two sections:
+      1. Candidate Information – includes skills, work experience, and education.
+      2. Job Description – includes job requirements, responsibilities, and employer preferences.
+      TASK:
+      Based on these inputs, generate an optimized JSON resume that aligns with the job description.
+      EXPECTATIONS:
+      - Rephrase work experience descriptions to emphasize key job requirements.
+      - Keep only relevant skills and add missing ones if they logically fit the candidate's background.
+      - Restructure responsibilities to match the job posting language.
+      - Change skills to emphasize job requirements.
+      - Create and/or change summary to emphasize job requirements.
+      - Maintain the original JSON structure.
+      CONSTRAINTS:
+      - Do not invent experience or skills that are not present in the input data.
+      - Use professional and natural language.
+      OUTPUT FORMAT:
+      Return a ONLY JSON with the same structure as the input, but with adjusted data.
+      Result should contain only JSON, because this text needed to be parsed.
+    user_content: |
+      CANDIDATE INFORMATION (JSON):
+      {json}
+      JOB DESCRIPTION:
+        Company: {job.business}
+        Position: {job.title}
+        Job details: {job.description}
+appliers:
+  properties:
+    # Use https://www.whatismybrowser.com/ to know your own user agent string
+    user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36
+    locale: en-US
+    timezone: America/Toronto
+    viewport:
+      width: 1920
+      height: 1080
+    browser:
+      path: C:\Program Files\Google\Chrome\Application\chrome.exe
+      user_data_dir: C:\Users\Ivan\AppData\Local\Google\Chrome\User Data

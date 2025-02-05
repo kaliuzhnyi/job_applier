@@ -1,1 +1,1 @@
-from .indeed import *
+from .indeed import apply

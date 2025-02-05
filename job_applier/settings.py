@@ -36,4 +36,4 @@ class Settings:
         self._load_settings()
 
 
-SETTINGS = Settings()
+SETTINGS = Settings(DEFAULT_FILE_NAME)

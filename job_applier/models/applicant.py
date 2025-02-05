@@ -50,7 +50,7 @@ def log_applicant(applicant: Applicant) -> None:
     log(SETTINGS['log']['applicants']['file'], [applicant])
 
 
-def save_applicant(applicant: Applicant) -> Applicant:
+def save_applicant(applicant: Applicant) -> Optional[Applicant]:
     with Session() as session:
         try:
             existing_applicant = session.query(Applicant).filter_by(email=applicant.email).first()
@@ -73,3 +73,14 @@ def save_applicant(applicant: Applicant) -> Applicant:
             logging.error(f"Database error while saving or updating applicant: {e}")
         except Exception as e:
             logging.error(f"Unexpected error while saving or updating applicant: {e}")
+
+
+def get_applicant(email: str) -> Optional[Applicant]:
+    with Session() as session:
+        try:
+            return session.query(Applicant).filter_by(email=email).first()
+        except SQLAlchemyError as e:
+            session.rollback()
+            logging.error(f"Database error while getting applicant: {e}")
+        except Exception as e:
+            logging.error(f"Unexpected error while getting applicant: {e}")

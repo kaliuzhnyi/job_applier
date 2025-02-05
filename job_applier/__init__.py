@@ -9,10 +9,11 @@ from job_applier import databese, log, scrapers
 from job_applier.databese import DATABASE_USE
 from job_applier.log import logger
 from job_applier.models.applicant import Applicant, save_applicant, log_applicant
-from job_applier.models.application import Application, apply, log_cover_letter, create_cover_letter, \
-    create_cover_letter_file, \
-    CoverLetter, log_application, save_application, check_application, save_applications, log_applications
+from job_applier.models.application import Application, apply, log_application, save_application, check_application, \
+    save_applications, log_applications
+from job_applier.models.cover_letter import CoverLetterModel, log_cover_letter
 from job_applier.models.job import find_jobs, log_jobs, save_jobs, Job, JOB_FINDERS
+from job_applier.models.resume import log_resume, ResumeModel
 from job_applier.scrapers import jobbank
 from job_applier.settings import SETTINGS
 
@@ -109,7 +110,8 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
     logger.info("Start creation cover letters for jobs...")
 
     # Create applications
-    cover_letters: List[CoverLetter] = []
+    cover_letters: List[CoverLetterModel] = []
+    resumes: List[ResumeModel] = []
     applications: List[Application] = []
     for current_job in jobs:
 
@@ -121,10 +123,12 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
 
         current_application = Application(
             applicant=applicant,
-            job=current_job
+            job=current_job,
+            email_to="kalyuzhny.ivan@gmail.com"
         )
         applications.append(current_application)
         cover_letters.append(current_application.cover_letter)
+        resumes.append(current_application.resume)
 
     # Log applications(cover letters)
     log_file = SETTINGS['log']['cover_letters']['file']
@@ -132,6 +136,13 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
         for cover_letter in cover_letters:
             log_cover_letter(cover_letter=cover_letter)
         logger.info(f"Cover letters are logged in the file: {log_file}")
+
+    # Log applications(resumes)
+    log_file = SETTINGS['log']['resumes']['file']
+    if resumes and log_file:
+        for resume in resumes:
+            log_resume(resume=resume)
+        logger.info(f"Resumes are logged in the file: {log_file}")
 
     return applications
 

@@ -1,15 +1,12 @@
 import logging
 import os.path
-import tempfile
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Optional, List
 
 import sqlalchemy
 import yagmail
-from docx import Document
 from openai import OpenAI
-from python_docx_replace import docx_replace
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -17,46 +14,10 @@ from job_applier.databese import Session
 from job_applier.log import log
 from job_applier.models.applicant import Applicant
 from job_applier.models.base import Base
+from job_applier.models.cover_letter import CoverLetterModel
 from job_applier.models.job import Job
+from job_applier.models.resume import ResumeModel
 from job_applier.settings import SETTINGS
-from job_applier.utils.convert_docx_to_pdf import convert_to_pdf_with_libreoffice, libreoffice_available
-
-
-@dataclass
-class Resume:
-    applicant: Applicant
-    job: Job
-    file_path: Optional[str] = None
-
-    def __init__(
-            self,
-            applicant: Applicant,
-            job: Job,
-            file_path: Optional[str] = None
-    ):
-        self.applicant = applicant
-        self.job = job
-        self.file_path = file_path or applicant.resume_file_path
-
-
-@dataclass
-class CoverLetter:
-    applicant: Applicant
-    job: Job
-    text: Optional[str] = None
-    file_path: Optional[str] = None
-
-    def __init__(
-            self,
-            applicant: Applicant,
-            job: Job,
-            text: Optional[str] = None,
-            file_path: Optional[str] = None
-    ):
-        self.applicant = applicant
-        self.job = job
-        self.text = text or create_cover_letter(job=job, applicant=applicant)
-        self.file_path = file_path or create_cover_letter_file(job=job, applicant=applicant, text=self.text)
 
 
 @dataclass
@@ -75,8 +36,8 @@ class Application(Base):
     email_to: Optional[str] = field(default=None, init=False)
     email_subject: Optional[str] = field(default=None, init=False)
     email_body: Optional[str] = field(default=None, init=False)
-    resume: Optional[Resume] = field(default=None, init=False)
-    cover_letter: Optional[CoverLetter] = field(default=None, init=False)
+    resume: Optional[ResumeModel] = field(default=None, init=False)
+    cover_letter: Optional[CoverLetterModel] = field(default=None, init=False)
 
     def __init__(
             self,
@@ -85,8 +46,8 @@ class Application(Base):
             email_to: Optional[str] = None,
             email_subject: Optional[str] = None,
             email_body: Optional[str] = None,
-            resume: Optional[Resume] = None,
-            cover_letter: Optional[CoverLetter] = None,
+            resume: Optional[ResumeModel] = None,
+            cover_letter: Optional[CoverLetterModel] = None,
             applied: bool = False,
             applied_at: datetime = None,
             **kw: Any
@@ -97,8 +58,8 @@ class Application(Base):
         self.email_to = email_to or job.email
         self.email_subject = email_subject or create_email_subject(job)
         self.email_body = email_body or create_email_body(job, applicant)
-        self.cover_letter = cover_letter or CoverLetter(job=job, applicant=applicant)
-        self.resume = resume or Resume(job=job, applicant=applicant)
+        self.cover_letter = cover_letter or CoverLetterModel(job=job, applicant=applicant)
+        self.resume = resume or ResumeModel(job=job, applicant=applicant)
         self.applied = applied
         self.applied_at = applied_at or (datetime.now() if applied else None)
 
@@ -140,80 +101,6 @@ def create_email_body(job: Job, applicant: Applicant) -> str | None:
         return None
 
     return chat.choices[0].message.content
-
-
-def create_cover_letter(job: Job, applicant: Applicant) -> str | None:
-    # Generate cover letter text
-    developer_content = SETTINGS["openai"]["create_applicant_cover_letter"]["developer_content"]
-    developer_content = developer_content.format(job=job, applicant=applicant)
-    user_content = SETTINGS["openai"]["create_applicant_cover_letter"]["user_content"]
-    user_content = user_content.format(job=job, applicant=applicant)
-
-    client = OpenAI()
-    chat = client.chat.completions.create(
-        model=SETTINGS["openai"]["version"],
-        messages=[
-            {"role": "developer", "content": developer_content},
-            {"role": "user", "content": user_content},
-        ],
-        response_format={
-            "type": "text"
-        },
-    )
-
-    if not len(chat.choices):
-        return None
-
-    return chat.choices[0].message.content
-
-
-def create_cover_letter_file(job: Job, applicant: Applicant, text: str) -> str | None:
-    replacements = {'text': text}
-    for k, v in vars(job).items():
-        replacements[f"job.{k}"] = v
-    for k, v in vars(applicant).items():
-        replacements[f"applicant.{k}"] = v
-
-    template_file_path = SETTINGS['cover_letter']['template']['file']
-    template_file_name, template_file_ext = os.path.splitext(os.path.basename(template_file_path))
-
-    # Define log dir for saving cover letters
-    log_file = SETTINGS['log']['cover_letters']['file']
-    if log_file:
-        log_dir = os.path.dirname(log_file)
-    else:
-        log_dir = tempfile.gettempdir()
-    log_file_name = f"{applicant.first_name.capitalize()}_{applicant.last_name.capitalize()}_Cover_Letter_{job.source_id}"
-
-    result_files = (
-        os.path.join(log_dir, f"{log_file_name}{template_file_ext}"),
-        os.path.join(log_dir, f"{log_file_name}.pdf")
-    )
-
-    # Fill and save cover letter with template ext
-    doc = Document(template_file_path)
-    docx_replace(doc, **replacements)
-    doc.save(result_files[0])
-
-    # Save cover letter with PDF ext
-    if libreoffice_available():
-        convert_to_pdf_with_libreoffice(result_files[0], result_files[1])
-        cover_letter_result_file = result_files[1]
-    else:
-        cover_letter_result_file = result_files[0]
-
-    return cover_letter_result_file
-
-
-def log_cover_letter(cover_letter: CoverLetter) -> None:
-    data = {
-        'job_applicant': f"{cover_letter.applicant.first_name} {cover_letter.applicant.last_name}",
-        'job_applicant_email': cover_letter.applicant.email,
-        'job_source': cover_letter.job.source,
-        'job_source_id': cover_letter.job.source_id,
-        'cover_letter_text': cover_letter.text
-    }
-    log(SETTINGS['log']['cover_letters']['file'], [data])
 
 
 def apply(application: Application) -> bool:
@@ -266,7 +153,7 @@ def save_applications(applications: List[Application]) -> None:
         save_application(application)
 
 
-def save_application(application: Application) -> Application:
+def save_application(application: Application) -> Optional[Application]:
     with Session() as session:
 
         application.job = session.merge(application.job)
