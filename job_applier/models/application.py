@@ -21,6 +21,7 @@ from job_applier.settings import SETTINGS
 @dataclass
 class Application(Base):
     __tablename__ = "applications"
+    __allow_unmapped__ = True
 
     job: Mapped[Job] = relationship()
     applicant: Mapped[Applicant] = relationship()
@@ -34,6 +35,10 @@ class Application(Base):
     email: Optional[EmailModel] = None
     resume: Optional[ResumeModel] = None
     cover_letter: Optional[CoverLetterModel] = None
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.__post_init__()
 
     def __post_init__(self) -> None:
 

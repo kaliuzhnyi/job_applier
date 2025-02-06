@@ -4,11 +4,11 @@ from sqlalchemy.orm import sessionmaker
 from job_applier.models.base import Base
 from job_applier.settings import SETTINGS
 
-DATABASE_URL = SETTINGS["database"]["sqlite"]["path"]
+DATABASE_URL = SETTINGS["database"]["path"]
 DATABASE_USE = bool(DATABASE_URL)
 
 if DATABASE_USE:
-    engine = create_engine(DATABASE_URL, echo=True)
+    engine = create_engine(DATABASE_URL, echo=False)
     Session = sessionmaker(engine)
 
 

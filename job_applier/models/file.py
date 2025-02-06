@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, TYPE_CHECKING
 
-from job_applier import Applicant, Job
+if TYPE_CHECKING:
+    from job_applier import Applicant, Job
 
 
 @dataclass
 class FileModel(ABC):
-    applicant: Applicant
-    job: Job
+    applicant: "Applicant"
+    job: "Job"
     text: Optional[str] = None
     file_path: Optional[str] = None
 
@@ -25,4 +26,3 @@ class FileModel(ABC):
     @abstractmethod
     def create_file(self) -> Optional[str]:
         pass
-

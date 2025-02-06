@@ -13,8 +13,7 @@ log:
   applications:
     file: logs/applications_log.csv # Leave it empty to disable logging for applications.
 database:
-  sqlite:
-    path: sqlite:///logs/database.db # To disable logging in database - leave this field blank
+  path: sqlite:///logs/database.db # To disable logging in database - leave this field blank
 resume:
   template:
     file: examples/resume_template.docx
@@ -213,15 +212,3 @@ openai:
         Company: {job.business}
         Position: {job.title}
         Job details: {job.description}
-appliers:
-  properties:
-    # Use https://www.whatismybrowser.com/ to know your own user agent string
-    user_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36
-    locale: en-US
-    timezone: America/Toronto
-    viewport:
-      width: 1920
-      height: 1080
-    browser:
-      path: C:\Program Files\Google\Chrome\Application\chrome.exe
-      user_data_dir: C:\Users\Ivan\AppData\Local\Google\Chrome\User Data

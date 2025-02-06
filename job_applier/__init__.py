@@ -124,8 +124,7 @@ def create_applications(applicant: Applicant, jobs: List[Job]) -> List[Applicati
 
         current_application = Application(
             applicant=applicant,
-            job=current_job,
-            email=EmailModel(applicant=applicant, job=current_job, to="kalyuzhny.ivan@gmail.com")
+            job=current_job
         )
         applications.append(current_application)
         cover_letters.append(current_application.cover_letter)
@@ -158,7 +157,7 @@ def process_applications(applications: List[Application]) -> None:
         try:
             application.apply()
             logger.info(
-                f"Successfully applied for job({application.job.title}, {application.job.source_id}, {application.job.email})")
+                f"Successfully applied for job({application.job.title}, {application.job.source_id}, {application.job.email}({application.email.to}))")
         except Exception as e:
             logger.info(
                 f"An error occurred during the application process for job({application.job.title}, {application.job.source_id}, {application.job.email})")

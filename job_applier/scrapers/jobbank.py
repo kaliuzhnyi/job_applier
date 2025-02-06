@@ -15,12 +15,14 @@ class ApiPaths(NamedTuple):
     DOMAIN: str
     JOBSEARCH: str
     JOBSEARCH_MORE: str
+    CITYSEARCH: str
 
 
 API_PATHS = ApiPaths(
     DOMAIN="https://www.jobbank.gc.ca",
     JOBSEARCH="/jobsearch/jobsearch",
-    JOBSEARCH_MORE="/jobsearch/job_search_loader.xhtml"
+    JOBSEARCH_MORE="/jobsearch/job_search_loader.xhtml",
+    CITYSEARCH="/core/ta-cityprovsuggest_en/select"
 )
 
 
@@ -37,11 +39,28 @@ def find_jobs(job_title: str, location: str, sort: str = "M") -> list[Job]:
 
     with requests.Session() as session:
 
+        # Get location ID
+        response = session.get(
+            urllib.parse.urljoin(API_PATHS.DOMAIN, API_PATHS.CITYSEARCH),
+            params={"q": location, "wt": "json"},
+        )
+        if response.status_code != 200:
+            return result
+
+        location_id = response.json()["response"]["docs"][0]["city_id"]
+
         # Load main result
         response = session.get(
-            f"{API_PATHS.DOMAIN}{API_PATHS.JOBSEARCH}",
-            params={"searchstring": job_title, "locationstring": location, "sort": sort},
+            urllib.parse.urljoin(API_PATHS.DOMAIN, API_PATHS.JOBSEARCH),
+            params={
+                "searchstring": job_title,
+                "locationstring": location,
+                "locationparam": location_id,
+                "sort": sort
+            },
         )
+        if response.status_code != 200:
+            return result
 
         soup = BeautifulSoup(response.content, "html.parser")
         result_element = soup.find(id="ajaxupdateform:result_block")

@@ -1,21 +1,23 @@
 import os
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+
+from typing import Optional, TYPE_CHECKING
 
 import yagmail
 from openai import OpenAI
 
-from job_applier import Job, Applicant, SETTINGS
+if TYPE_CHECKING:
+    from job_applier import Applicant, Job
 
 
 @dataclass
 class EmailModel:
-    job: Job
-    applicant: Applicant
+    job: "Job"
+    applicant: "Applicant"
     to: Optional[str] = None
     subject: Optional[str] = None
     text: Optional[str] = None
-    attachments: Optional[list[str]] = None
+    attachments: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.to:
@@ -31,6 +33,9 @@ class EmailModel:
         return f"Application for {self.job.title.capitalize()} position"
 
     def create_text(self) -> Optional[str]:
+
+        from job_applier import SETTINGS
+
         developer_content = SETTINGS["openai"]["create_applicant_email"]["developer_content"]
         developer_content = developer_content.format(job=self.job, applicant=self.applicant)
         user_content = SETTINGS["openai"]["create_applicant_email"]["user_content"]
