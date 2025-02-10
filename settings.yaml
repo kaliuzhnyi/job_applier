@@ -22,11 +22,11 @@ cover_letter:
     file: examples/cover_letter_template.docx
 applicant:
   first_name: Ivan
-  last_name: Kaliuzhnyi
+  last_name: Ivanov
   contacts:
-    email: i.kaliuzhnyi.ca@gmail.com
-    phone: +1 (437) 441-6585
-    address: &applicant_address Barrie, ON
+    email: i.ivanov@gmail.com
+    phone: +1 (437) 865-4215
+    address: &applicant_address Toronto, ON
   resume:
     file: # If field is empty, AI will generate text and file
   cover_letter:
@@ -60,94 +60,50 @@ applicant:
         Completed the Intuit Academy Bookkeeping program, gaining a strong foundation in bookkeeping principles, financial statements, and accounting measurement.
         Developed skills in the double-entry bookkeeping system, bank reconciliations, and financial statement analysis.
         Acquired hands-on experience with QuickBooks Online and real-world accounting scenarios.
-    # Education 3
-    - title: •  Master's degree, International EconomicsMaster's degree, International Economics
-      organization: Donetsk National University
-      date:
-        start: 2012
-        end: 2014
-      description: |
-        Focused on global markets, economic policy, and financial analysis.
-        Developed strong analytical and strategic decision-making skills for international business and economic development.
-    # Education 4
-    - title: •  Bachelor's degree, International EconomicsBachelor's degree, International Economics
-      organization: Donetsk National University
-      date:
-        start: 2008
-        end: 2012
-      description: |
-        Developed a solid understanding of economic analysis, international trade, and financial management.
-        Gained analytical and problem-solving skills essential for navigating global economic trends and business strategies.
   experience:
     # Experience/job 1
-    - title: •  Senior Software Engineer
-      company: Zakaz.ua
+    - title: Bookkeeper
+      company: ABC Accounting Services
       date:
-        start: Dec 2021
+        start: Jan 2023
         end: Present
       description: |
-        ．Designed and implemented custom business applications to streamline operations, addressing both standard and unique requirements within the company.
-        ．Developed integrations with enterprise tools such as Active Directory and Google BigQuery, enabling centralized user management and advanced data analytics.
-        ．Implemented secure digital signature functionality using EUSign, ensuring compliance with Ukrainian regulatory standards and enhancing the security of document processing.
-        ．Led the migration of the development process to modern tools, including Git for version control and 1C:EDT for an efficient development environment, improving team collaboration and productivity.
-        ．Automated workflows and data exchange processes, reducing manual effort and improving the accuracy and speed of business operations.
+        ．Managed full-cycle bookkeeping, including accounts payable, accounts receivable, payroll, and reconciliations, ensuring financial accuracy and compliance with regulations.
+        ．Prepared financial statements, balance sheets, and income statements to provide management with a clear overview of the company’s financial health.
+        ．Processed invoices, payments, and expense reports, maintaining accurate and up-to-date financial records.
+        ．Ensured compliance with Canadian tax laws, filing GST/HST returns and assisting with corporate tax preparations.
+        ．Utilized QuickBooks and other accounting software to track transactions, generate reports, and improve efficiency in financial management.
+        ．Collaborated with external auditors and tax advisors to ensure accurate reporting and regulatory compliance.
+        ．Implemented process improvements to streamline financial workflows and reduce manual data entry errors.
     # Experience/job 2
-    - title: •  Senior Software Engineer
-      company: Lombard Pershyy
+    - title: Bookkeeper
+      company: XYZ Consulting Group
+      date:
+        start: Jun 2021
+        end: Dec 2022
+      description: |
+        ．Maintained financial records, processed transactions, and performed monthly bank reconciliations to ensure accurate bookkeeping.
+        ．Assisted in the preparation of financial reports, budgets, and forecasts, supporting management in strategic decision-making.
+        ．Managed payroll processing, ensuring timely salary payments and compliance with employment regulations.
+        ．Handled accounts payable and receivable, tracking due payments and following up on outstanding invoices.
+        ．Prepared year-end financial statements and coordinated with accountants for tax filing and audits.
+        ．Implemented bookkeeping best practices, improving financial reporting accuracy and operational efficiency.
+    # Experience/job 3
+    - title: Junior Bookkeeper
+      company: LMN Business Solutions
       date:
         start: Jan 2020
-        end: Nov 2021
+        end: May 2021
       description: |
-        ．Designed and implemented custom business applications tailored to meet specific operational needs, improving the efficiency of core business processes.
-        ．Enhanced and optimized existing software configurations to align with the company’s evolving requirements and industry standards.
-        ．Developed and automated workflows to streamline operational tasks, reduce manual effort, and improve accuracy in data management.
-        ．Collaborated with stakeholders to gather requirements and deliver solutions that addressed real-world challenges and supported business growth.
-        ．Designed and implemented RESTful integrations to connect various company systems, enhancing data exchange and process automation across the organization.
-        ．Developed custom business applications to meet both standard and unique business requirements, streamlining operations and ensuring compliance with local regulations.
-        ．Engineered integrations with government platforms, including Diia, Open Data, and Ukrposhta, facilitating seamless communication and data sharing.
-        ．Collaborated with financial service providers like Platon, CITYHUB, and Global Money, ensuring secure and efficient payment processing and transaction management.
-        ．Integrated with communication tools and third-party services, including Asterisk PBX, Telegram, Google Translate, and Hotline Finance, enabling enhanced operational capabilities.
-        ．Developed integrations with industry-specific platforms such as RIA.com (Auto) and credit reporting services like UBKI, improving data accessibility and operational workflows.
-        ．Implemented secure digital signature integrations with EUSign and BilboSign, ensuring document authenticity and regulatory compliance.
-        ．Facilitated data exchange between enterprise systems using HTTP, COM, and OData, ensuring interoperability and real-time synchronization.
-    # Experience/job 3
-    - title: •  Senior Software Engineer
-      company: Sobi Group
-      date:
-        start: Aug 2019
-        end: Jan 2020
-      description: |
-        ．Designed and implemented custom business applications tailored to meet specific operational needs, improving the efficiency of core business processes.
-        ．Enhanced and optimized existing software configurations to align with the company’s evolving requirements and industry standards.
-        ．Developed and automated workflows to streamline operational tasks, reduce manual effort, and improve accuracy in data management.
-        ．Collaborated with stakeholders to gather requirements and deliver solutions that addressed real-world challenges and supported business growth.
-    # Experience/job 4
-    - title: •  Senior Software Engineer
-      company: MegaTrade TG
-      date:
-        start: Jun 2018
-        end: Jan 2020
-      description: |
-        ．Developed a robust backend application for inventory management, facilitating seamless data exchange between the company’s website and ERP system.
-        ．Built and enhanced custom business applications to automate and streamline core operations, including inventory tracking, reporting, and order management.
-        ．Designed and implemented integrations with third-party services, including systems based on OpenCart, to improve e-commerce capabilities and synchronize inventory and order data across platforms.
-        ．Developed integrations with retail equipment and banking services to enable efficient payment processing, invoicing, and point-of-sale operations.
-        ．Improved and customized reporting tools to provide actionable insights for business decision-making, enhancing operational transparency and efficiency.
-    # Experience/job 5
-    - title: •  Junior Software Engineer & Middle Software Engineer
-      company: OroPharm
-      date:
-        start: Jan 2014
-        end: May 2018
-      description: |
-        ．Designed and implemented a custom enterprise resource planning (ERP) system tailored to the company’s unique requirements, optimizing inventory management, sales tracking, and reporting processes.
-        ．Developed and maintained integrations between the ERP system and third-party web services, including banking systems and retail equipment, ensuring seamless operations and improving efficiency in payment processing and inventory updates.
-        ．Automated core business processes such as inventory tracking and financial reconciliation, reducing manual workload and minimizing errors.
-        ．Administered IT infrastructure, including server deployment, remote access solutions, and network management, ensuring high availability and security of business-critical systems.
-        ．Established and maintained infrastructure for retail equipment, including point-of-sale systems, ensuring operational efficiency and improving customer service at multiple locations.
+        ．Recorded financial transactions, reconciled bank statements, and maintained ledgers for accurate bookkeeping.
+        ．Assisted with payroll processing and tax calculations, ensuring compliance with local regulations.
+        ．Prepared financial summaries and assisted senior accountants in compiling reports for management.
+        ．Processed invoices, receipts, and payments, keeping financial records up to date.
+        ．Worked with QuickBooks and Excel to manage financial data and generate reports.
+        ．Supported the finance team in budgeting and expense tracking, improving financial organization and planning.
 job:
   title: bookkeeper
-  location: Barrie, ON # if looking for jobs in city where applicant live use anchor - *applicant_address
+  location: Toronto, ON # if looking for jobs in city where applicant live use anchor - *applicant_address
   applying: true # if false jobs are only finding and save, otherwise jobs will be applied as well
 openai:
   version: gpt-4o-mini
